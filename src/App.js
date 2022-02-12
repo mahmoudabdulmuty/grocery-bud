@@ -30,6 +30,23 @@ function App() {
 				msg: 'please enter a value'
 			});
 		} else if (name && isEditing) {
+			setList((prevList) => {
+				return prevList.map((item) => {
+					if (item.id === editID) {
+						return { ...item, title: name };
+					}
+					return item;
+				});
+			});
+			setName('');
+			setIsEditing(false);
+			setEditID(null);
+			setAlert({
+				...alert,
+				show: true,
+				type: 'success',
+				msg: 'item changed successfully'
+			});
 		} else {
 			setList((prevList) => [...prevList, { id: nanoid(), title: name }]);
 			setName('');
@@ -66,6 +83,13 @@ function App() {
 		});
 	};
 
+	const handleEdit = (id) => {
+		const item = list.find((item) => item.id === id);
+		setIsEditing(true);
+		setName(item.title);
+		setEditID(id);
+	};
+
 	useEffect(() => {
 		localStorage.setItem('list', JSON.stringify(list));
 	}, [list]);
@@ -90,7 +114,12 @@ function App() {
 			</form>
 			{list.length > 0 && (
 				<div className="grocery-container">
-					<List setAlert={setAlert} handleDelete={handleDelete} list={list} />
+					<List
+						setAlert={setAlert}
+						handleDelete={handleDelete}
+						handleEdit={handleEdit}
+						list={list}
+					/>
 					<button onClick={handelClear} className="clear-btn">
 						clear items
 					</button>
